@@ -130,11 +130,12 @@ export async function createSession(data: any) {
 export async function getSessionsForUser(userId: string, role: "student" | "volunteer") {
   const q = query(
     collection(db, COLLECTIONS.SESSIONS),
-    where(role === "student" ? "studentId" : "volunteerId", "==", userId),
-    orderBy("scheduledAt", "desc")
+    where(role === "student" ? "studentId" : "volunteerId", "==", userId)
   );
   const snap = await getDocs(q);
-  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return snap.docs
+    .map(doc => ({ id: doc.id, ...doc.data() }))
+    .sort((a: any, b: any) => (b.scheduledAt?.seconds || 0) - (a.scheduledAt?.seconds || 0));
 }
 
 export async function createWorkshop(data: any) {
@@ -149,12 +150,17 @@ export async function createWorkshop(data: any) {
 export async function getUpcomingWorkshops() {
   const q = query(
     collection(db, COLLECTIONS.WORKSHOPS),
-    where("status", "==", "approved"),
-    where("scheduledAt", ">=", new Date()),
-    orderBy("scheduledAt", "asc")
+    where("status", "==", "approved")
   );
   const snap = await getDocs(q);
-  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const now = new Date();
+  return snap.docs
+    .map(doc => ({ id: doc.id, ...doc.data() }))
+    .filter((w: any) => {
+      const scheduled = w.scheduledAt?.seconds ? new Date(w.scheduledAt.seconds * 1000) : new Date(w.scheduledAt);
+      return scheduled >= now;
+    })
+    .sort((a: any, b: any) => (a.scheduledAt?.seconds || 0) - (b.scheduledAt?.seconds || 0));
 }
 
 // --- Admin Services ---

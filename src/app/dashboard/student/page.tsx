@@ -127,6 +127,35 @@ export default function StudentDashboardHome() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Main Content (Left) */}
         <div className="lg:col-span-2 space-y-10">
+          {/* Diagnostic Quiz Prompt (If Pending) */}
+          {!studentData?.assessmentComplete && (
+            <section className="p-10 glass border-white/60 rounded-[3rem] shadow-2xl bg-primary/5 relative overflow-hidden group border-2 border-primary/20">
+               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000"></div>
+               
+               <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
+                  <div className="flex-1">
+                     <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-primary/20 text-primary">
+                        <Zap className="w-3.5 h-3.5 fill-primary" />
+                        First Step
+                     </div>
+                     <h3 className="text-3xl font-black mb-4 tracking-tight leading-tight text-foreground">
+                        Ready to find your <span className="text-primary italic">Strengths</span>?
+                     </h3>
+                     <p className="text-foreground/50 font-bold mb-8 italic">
+                        Take a quick discovery quiz to map your skills and get matched with the perfect mentor! 🚀
+                     </p>
+                     <Link href="/dashboard/student/quiz" className="px-10 py-5 bg-primary text-white rounded-2xl font-black text-lg hover:scale-105 active:scale-95 transition-all shadow-xl flex items-center gap-3">
+                        Start Discovery Quiz
+                        <ArrowRight className="w-5 h-5" />
+                     </Link>
+                  </div>
+                  <div className="w-48 h-48 bg-white/40 rounded-[3rem] flex items-center justify-center text-primary shadow-inner border-white">
+                     <Sparkles className="w-24 h-24 stroke-[1.5]" />
+                  </div>
+               </div>
+            </section>
+          )}
+
           {/* Hero Action Section */}
           {session ? (
             <section className="p-10 bg-gradient-to-br from-indigo-600 via-primary to-violet-600 rounded-[3rem] text-white shadow-2xl shadow-primary/20 relative overflow-hidden group">
@@ -169,7 +198,10 @@ export default function StudentDashboardHome() {
                </div>
             </section>
           ) : (
-            <section className="p-12 glass border-2 border-dashed border-primary/20 rounded-[3rem] text-center flex flex-col items-center justify-center group overflow-hidden relative">
+            <section className={cn(
+              "p-12 glass border-2 border-dashed border-primary/20 rounded-[3rem] text-center flex flex-col items-center justify-center group overflow-hidden relative",
+              !studentData?.assessmentComplete && "opacity-60 grayscale-[0.5]"
+            )}>
                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:scale-150 transition-transform"></div>
                <div className="w-24 h-24 bg-primary/5 rounded-[2rem] flex items-center justify-center mb-8 rotate-3 transition-transform group-hover:rotate-12 group-hover:scale-110">
                   <Calendar className="w-12 h-12 text-primary/40" />
@@ -246,27 +278,33 @@ export default function StudentDashboardHome() {
               </div>
               
               <div className="space-y-8">
-                 {studentData?.subjects?.length > 0 ? (
-                   studentData.subjects.slice(0, 3).map((sub: string, idx: number) => (
+                 {studentData?.assessmentComplete && studentData?.lastAssessment?.scores ? (
+                   studentData.lastAssessment.scores.map((score: any, idx: number) => (
                       <div key={idx} className="space-y-3">
                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-black text-foreground/70 uppercase tracking-widest">{sub}</span>
-                            <span className="text-xs font-black text-primary bg-primary/5 px-2.5 py-1 rounded-lg">Level {Math.floor(Math.random() * 5) + 3}</span>
+                            <span className="text-sm font-black text-foreground/70 uppercase tracking-widest">{score.subject}</span>
+                            <span className={cn(
+                              "text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tighter shadow-sm",
+                              score.proficiency === "Master" ? "bg-emerald-500 text-white" : score.proficiency === "Growing" ? "bg-primary text-white" : "bg-warning text-white"
+                            )}>{score.proficiency}</span>
                          </div>
-                         <div className="relative h-3 bg-slate-100 rounded-full overflow-hidden">
+                         <div className="relative h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner">
                             <div 
                                className={cn(
-                                 "absolute inset-y-0 left-0 rounded-full transition-all duration-[2000ms] shadow-[0_0_15px_rgba(79,70,229,0.2)]", 
-                                 idx % 3 === 0 ? "bg-primary" : idx % 3 === 1 ? "bg-accent" : "bg-cyan-500"
+                                 "absolute inset-y-0 left-0 rounded-full transition-all duration-[2000ms] shadow-lg", 
+                                 score.proficiency === "Master" ? "bg-emerald-500" : score.proficiency === "Growing" ? "bg-primary" : "bg-warning"
                                )} 
-                               style={{ width: `${Math.floor(Math.random() * 40) + 55}%` }} 
+                               style={{ width: `${score.score}%` }} 
                             />
                          </div>
                       </div>
                    ))
                  ) : (
-                    <div className="p-8 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
-                       <p className="text-sm text-foreground/40 font-bold italic leading-relaxed">Map your subjects to track your growth journey!</p>
+                    <div className="p-8 text-center bg-slate-50/50 rounded-3xl border border-dashed border-slate-200 group hover:border-primary/40 transition-all">
+                       <p className="text-sm text-foreground/40 font-bold italic leading-relaxed mb-6">Complete your Discovery Quiz to map your skills!</p>
+                       <Link href="/dashboard/student/quiz" className="inline-flex items-center justify-center w-12 h-12 bg-white rounded-2xl text-primary shadow-sm group-hover:scale-110 transition-transform">
+                          <ArrowRight className="w-6 h-6" />
+                       </Link>
                     </div>
                  )}
               </div>

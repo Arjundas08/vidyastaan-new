@@ -72,8 +72,8 @@ export default function StudentOnboardingPage() {
         onboardingComplete: true,
       });
       
-      toast.success("Onboarding complete! Welcome to your dashboard.");
-      router.push("/dashboard/student");
+      toast.success("Onboarding complete! Welcome to your discovery journey.");
+      router.push("/dashboard/student/quiz");
     } catch (e: any) {
       console.error("Onboarding error:", e);
       toast.error("Something went wrong. Please try again.");

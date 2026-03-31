@@ -1,4 +1,4 @@
-# Vidyastaan - India's #1 Peer-to-Peer Learning Platform for V
+# Vidyastaan - India's #1 Peer-to-Peer Learning Platform 
 
 > **A new possibility for every child** — Connecting underserved school students with passionate college volunteers for academic support and real-world skill development.
 

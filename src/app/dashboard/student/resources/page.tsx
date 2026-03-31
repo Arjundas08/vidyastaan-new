@@ -45,13 +45,19 @@ export default function ResourcesPage() {
   };
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const uid = user.uid;
+
     async function load() {
-      const profile = await getStudentProfile(user!.uid);
+      const profile = await getStudentProfile(uid);
       if (profile?.grade) setGrade(profile.grade);
       
       // Load current progress
-      const progress = await getStudentProgress(user.uid);
+      const progress = await getStudentProgress(uid);
       if (progress) {
         const learning = new Set(progress.learningTopics?.map((t: any) => t.chapterId) || []);
         const completed = new Set(progress.completedTopics?.map((t: any) => t.chapterId) || []);

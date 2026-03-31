@@ -123,10 +123,5 @@ We welcome contributions! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 Support
+## TEAM 36
 
-For support, email support@vidyastaan.org or open an issue on GitHub.
-
----
-
-**Empowering 10k+ Student-Volunteer Pairs** 🌍
